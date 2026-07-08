@@ -8,59 +8,67 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.ameen.meal_chooser.HelloController"
-      style="-fx-background-color: #f4f4f4;">
+<VBox alignment="CENTER" spacing="20.0" prefWidth="480.0" prefHeight="500.0"
+      style="-fx-background-color: #f8fafc; -fx-padding: 30;"
+      xmlns:fx="http://themeasurement.com/fxml" fx:controller="com.ameen.meal_chooser.HelloController">
 
-    <padding>
-        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0"/>
-    </padding>
-
-    <Label text="غدانا اليوم 🍽️" textFill="#2c3e50">
-        <font>
-            <Font name="System Bold" size="22.0"/>
-        </font>
-    </Label>
-
-    <Label fx:id="mealDisplayLabel" text="شو رح نطبخ اليوم ؟" textAlignment="CENTER" textFill="#16a085" wrapText="true">
-        <font>
-            <Font size="18.0"/>
-        </font>
-    </Label>
-
-    <Button text="🎲 اقترح لي وجبة" onAction="#onGenerateMealClick"
-            style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-cursor: hand;">
-        <font>
-            <Font name="System Bold" size="16.0"/>
-        </font>
-    </Button>
-
-    <Label text="__________________________________________" textFill="#bdc3c7"/>
-
-    <HBox alignment="CENTER" spacing="10.0">
-        <TextField fx:id="newMealInput" promptText="اكتب اسم وجبة جديدة هنا..." prefWidth="200.0"
-                   style="-fx-padding: 8px;"/>
-
-        <Button text="➕ إضافة" onAction="#onAddMealClick"
-                style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 8px 15px;">
+    <VBox alignment="CENTER" spacing="5">
+        <Label text="غدانا اليوم 🎲" style="-fx-text-fill: #2e3d52; -fx-font-weight: bold;">
             <font>
-                <Font name="System Bold" size="13.0"/>
+                <Font name="Segoe UI" size="28.0"/>
+            </font>
+        </Label>
+        <Label text="مقترح الوجبات الذكي لإدارة طعامك اليومي" style="-fx-text-fill: #64748b;">
+            <font>
+                <Font name="Segoe UI" size="13.0"/>
+            </font>
+        </Label>
+    </VBox>
+
+    <VBox alignment="CENTER" prefHeight="100.0" maxWidth="Infinity"
+          style="-fx-background-color: white; -fx-background-radius: 15; -fx-border-color: #e2e8f0; -fx-border-radius: 15; -fx-border-width: 1; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.03), 10, 0, 0, 5); -fx-padding: 15;">
+        <Label fx:id="mealDisplayLabel" text="اضغط على زر الاقتراح لبدء الاختيار ✨" textAlignment="CENTER"
+               wrapText="true"
+               style="-fx-text-fill: #e67e22; -fx-font-weight: bold;">
+            <font>
+                <Font name="Segoe UI" size="18.0"/>
+            </font>
+        </Label>
+    </VBox>
+
+    <VBox spacing="8" alignment="CENTER_RIGHT">
+        <Label text="إضافة وجبة جديدة:" style="-fx-text-fill: #475569; -fx-font-weight: bold;">
+            <font>
+                <Font name="Segoe UI" size="14.0"/>
+            </font>
+        </Label>
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="➕ إضافة" onAction="#onAddMealClick" prefHeight="38.0" prefWidth="90.0"
+                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+            <TextField fx:id="newMealInput" promptText="اكتب اسم الطبخة هنا..." prefHeight="38.0" HBox.hgrow="ALWAYS"
+                       style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #cbd5e1; -fx-background-color: white; -fx-padding: 0 10 0 10; -fx-alignment: center_right;"/>
+        </HBox>
+    </VBox>
+
+    <VBox spacing="12" alignment="CENTER" maxWidth="Infinity">
+
+        <Button text="🎲 اقترح لي وجبة" onAction="#onSuggestMealClick" prefHeight="45.0" maxWidth="Infinity"
+                style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(230,126,34,0.2), 8, 0, 0, 4);">
+            <font>
+                <Font name="Segoe UI" size="16.0"/>
             </font>
         </Button>
 
-        <Button text="🗑️ حذف" onAction="#onDeleteMealClick"
-                style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 8px 12px;">
-            <font>
-                <Font name="System Bold" size="13.0"/>
-            </font>
-        </Button>
+        <HBox spacing="12" alignment="CENTER" maxWidth="Infinity">
+            <Button text="🗑️ حذف وجبة" onAction="#onDeleteMealClick" prefHeight="38.0" HBox.hgrow="ALWAYS"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #f1f5f9; -fx-text-fill: #ef4444; -fx-border-color: #fca5a5; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
 
-        <Button text="📂 تصفح الوجبات" onAction="#onBrowseMealsClick"
-                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 8px 12px;">
-            <font>
-                <Font name="System Bold" size="13.0"/>
-            </font>
-        </Button>
-    </HBox>
+            <Button text="📂 تصفح وإدارة الوجبات" onAction="#onBrowseMealsClick" prefHeight="38.0" HBox.hgrow="ALWAYS"
+                    maxWidth="Infinity"
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+        </HBox>
+
+    </VBox>
 
 </VBox>

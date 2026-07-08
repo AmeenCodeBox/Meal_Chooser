@@ -19,7 +19,7 @@ public class HelloController {
     private TextField newMealInput;
 
     @FXML
-    protected void onGenerateMealClick() {
+    protected void onSuggestMealClick() {
         String suggestedMeal = DatabaseManager.getRandomMeal();
         mealDisplayLabel.setText(suggestedMeal);
     }
@@ -67,7 +67,7 @@ public class HelloController {
         ObservableList<String> allMeals = DatabaseManager.getMealsList();
 
         if (allMeals.isEmpty()) {
-            mealDisplayLabel.setText("⚠️ بنك البيانات فارغ حالياً!");
+            mealDisplayLabel.setText("⚠️ بنك البيانات فارغ حالياً!\n يرجى إضافة وجبات أولاً قبل التصفح.");
             return;
         }
 
