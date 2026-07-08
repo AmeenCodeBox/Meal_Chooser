@@ -23,6 +23,11 @@ public class DatabaseManager {
         Connection connection = null;
         try {
             connection = DriverManager.getConnection(getDatabaseURL());
+            if (connection != null) {
+                try (Statement stmt = connection.createStatement()) {
+                    stmt.execute("PRAGMA foreign_keys = ON;");
+                }
+            }
         } catch (SQLException e) {
             System.out.println("an error occurred during connecting to data base: " + e.getMessage());
         }
@@ -30,25 +35,67 @@ public class DatabaseManager {
     }
 
     protected static void createDatabase() {
-        String sql = "CREATE TABLE IF NOT EXISTS meals (\n"
+        String sqlCategories = "CREATE TABLE IF NOT EXISTS categories (\n"
                 + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
                 + " name TEXT NOT NULL UNIQUE\n"
+                + ");";
+
+        String sqlMeals = "CREATE TABLE IF NOT EXISTS meals (\n"
+                + " id INTEGER PRIMARY KEY AUTOINCREMENT,\n"
+                + " name TEXT NOT NULL UNIQUE,\n"
+                + " category_id INTEGER,\n"
+                + " FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL\n"
                 + ");";
 
         try (Connection connection = connect();
              Statement stmt = connection.createStatement()) {
 
             if (connection != null) {
-                stmt.execute(sql);
-                System.out.println("Database created successfully");
+                stmt.execute(sqlCategories);
+                stmt.execute(sqlMeals);
+                System.out.println("Database tables initialized successfully");
+
+                insertDefaultCategories(stmt);
             }
         } catch (SQLException e) {
             System.out.println("an error occurred while creating the database: " + e.getMessage());
         }
     }
 
-    public static boolean addMeal(String mealName) {
-        String sql = "INSERT INTO meals (name) VALUES (?)";
+    private static void insertDefaultCategories(Statement stmt) {
+        String[] defaults = {"أكل صيني", "أكل إيطالي", "سباغيتي", "وجبات سريعة", "أكل شرقي"};
+        for (String cat : defaults) {
+            try {
+                stmt.execute("INSERT OR IGNORE INTO categories (name) VALUES ('" + cat + "');");
+            } catch (SQLException e) {
+            }
+        }
+    }
+
+
+    public static ObservableList<Category> getCategoriesList() {
+        ObservableList<Category> categoriesList = FXCollections.observableArrayList();
+        String sql = "SELECT id, name FROM categories";
+
+        try (Connection connection = connect();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            while (resultSet.next()) {
+                categoriesList.add(new Category(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("خطأ في جلب قائمة التصنيفات: " + e.getMessage());
+        }
+        return categoriesList;
+    }
+
+
+    public static boolean addMeal(String mealName, int categoryId) {
+        String sql = "INSERT INTO meals (name, category_id) VALUES (?, ?)";
 
         try (Connection connection = connect();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
@@ -56,6 +103,7 @@ public class DatabaseManager {
             if (connection == null) return false;
 
             preparedStatement.setString(1, mealName);
+            preparedStatement.setInt(2, categoryId);
             preparedStatement.executeUpdate();
             System.out.println("Meal added successfully: " + mealName);
             return true;
@@ -94,16 +142,29 @@ public class DatabaseManager {
         }
     }
 
-    public static String getRandomMeal() {
-        String randomMeal = "لا يوجد أي طبخات في قاعدة البيانات بعد !\nأدخل طبختك الاولى";
-        String sql = "SELECT * FROM meals ORDER BY RANDOM() LIMIT 1";
+    public static String getRandomMeal(int selectedCategoryId) {
+        String randomMeal = "لا يوجد أي طبخات في هذا التصنيف بعد !\nأدخل طبختك الاولى";
+
+        String sql;
+        if (selectedCategoryId == -1) {
+            sql = "SELECT name FROM meals ORDER BY RANDOM() LIMIT 1";
+        } else {
+            sql = "SELECT name FROM meals WHERE category_id = ? ORDER BY RANDOM() LIMIT 1";
+        }
 
         try (Connection connection = connect();
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            if (resultSet.next()) {
-                randomMeal = resultSet.getString("name");
+            if (selectedCategoryId != -1) {
+                preparedStatement.setInt(1, selectedCategoryId);
+            }
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    randomMeal = resultSet.getString("name");
+                } else if (selectedCategoryId == -1) {
+                    randomMeal = "لا يوجد أي طبخات في قاعدة البيانات بعد !\nأدخل طبختك الاولى";
+                }
             }
         } catch (SQLException e) {
             System.out.println("an error occurred while fetching a random meal: " + e.getMessage());
@@ -111,16 +172,23 @@ public class DatabaseManager {
         return randomMeal;
     }
 
-    public static ObservableList<String> getMealsList() {
-        ObservableList<String> mealsList = FXCollections.observableArrayList();
-        String sql = "SELECT name FROM meals";
+    public static ObservableList<Meal> getMealsList() {
+        ObservableList<Meal> mealsList = FXCollections.observableArrayList();
+        String sql = "SELECT m.id, m.name, m.category_id, c.name AS category_name " +
+                "FROM meals m " +
+                "LEFT JOIN categories c ON m.category_id = c.id";
 
         try (Connection connection = connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(sql)) {
 
             while (resultSet.next()) {
-                mealsList.add(resultSet.getString("name"));
+                mealsList.add(new Meal(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getInt("category_id"),
+                        resultSet.getString("category_name")
+                ));
             }
         } catch (SQLException e) {
             System.out.println("خطأ في جلب قائمة الوجبات: " + e.getMessage());

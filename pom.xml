@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.example</groupId>
+    <groupId>com.ameen</groupId>
     <artifactId>Meal_Chooser</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Meal_Chooser</name>
@@ -65,7 +65,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.meal_chooser/com.ameen.meal_chooser.HelloApplication</mainClass>
+                            <mainClass>com.ameen.meal_chooser/com.ameen.meal_chooser.HelloApplication</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
@@ -98,6 +98,22 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+                <configuration>
+                    <mainClass>com.ameen.meal_chooser.HelloApplication</mainClass>
+
+                    <jlinkImageName>MealChooserApp</jlinkImageName>
+                    <jlinkZipName>MealChooserZip</jlinkZipName>
+                    <noManPages>true</noManPages>
+                    <noHeaderFiles>true</noHeaderFiles>
+                    <stripDebug>true</stripDebug>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>

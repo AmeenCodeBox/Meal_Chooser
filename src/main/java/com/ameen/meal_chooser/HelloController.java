@@ -1,16 +1,18 @@
 package com.ameen.meal_chooser;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-public class HelloController {
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class HelloController implements Initializable {
 
     @FXML
     private Label mealDisplayLabel;
@@ -19,22 +21,53 @@ public class HelloController {
     private TextField newMealInput;
 
     @FXML
-    protected void onSuggestMealClick() {
-        String suggestedMeal = DatabaseManager.getRandomMeal();
-        mealDisplayLabel.setText(suggestedMeal);
+    private ComboBox<Category> categoryFilterCombo;
+
+    @FXML
+    private ComboBox<Category> categoryAddCombo;
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        ObservableList<Category> categories = DatabaseManager.getCategoriesList();
+
+        categoryAddCombo.setItems(categories);
+        if (!categories.isEmpty()) {
+            categoryAddCombo.getSelectionModel().selectFirst();
+        }
+
+        ObservableList<Category> filterList = FXCollections.observableArrayList();
+        filterList.add(new Category(-1, "كل التصنيفات 🍽️"));
+        filterList.addAll(categories);
+
+        categoryFilterCombo.setItems(filterList);
+        categoryFilterCombo.getSelectionModel().selectFirst();
+    }
+
+    @FXML
+    private void onSuggestMealClick() {
+        Category selectedCategory = categoryFilterCombo.getSelectionModel().getSelectedItem();
+        int categoryId = (selectedCategory != null) ? selectedCategory.getId() : -1;
+
+        String result = DatabaseManager.getRandomMeal(categoryId);
+
+        mealDisplayLabel.setText(result);
     }
 
     @FXML
     protected void onAddMealClick() {
         String mealName = newMealInput.getText().trim();
+        Category selectedCategory = categoryAddCombo.getSelectionModel().getSelectedItem();
+
+        if (selectedCategory == null) {
+            mealDisplayLabel.setText("⚠️ تنبيه: يرجى اختيار تصنيف للوجبة أولاً!");
+            return;
+        }
 
         if (!mealName.isEmpty()) {
-
-            boolean isAdded = DatabaseManager.addMeal(mealName);
+            boolean isAdded = DatabaseManager.addMeal(mealName, selectedCategory.getId());
 
             if (isAdded) {
-
-                mealDisplayLabel.setText("✅ تم حفظ \"" + mealName + "\" في بنك البيانات!");
+                mealDisplayLabel.setText("✅ تم حفظ \"" + mealName + "\" في تصنيف [" + selectedCategory.getName() + "]!");
                 newMealInput.clear();
             } else {
                 mealDisplayLabel.setText("⚠️ تنبيه: وجبة \"" + mealName + "\" موجودة بالفعل في قائمتك مسبقاً!");
@@ -64,14 +97,20 @@ public class HelloController {
 
     @FXML
     protected void onBrowseMealsClick() {
-        ObservableList<String> allMeals = DatabaseManager.getMealsList();
+        ObservableList<Meal> mealsData = DatabaseManager.getMealsList();
 
-        if (allMeals.isEmpty()) {
+        if (mealsData.isEmpty()) {
             mealDisplayLabel.setText("⚠️ بنك البيانات فارغ حالياً!\n يرجى إضافة وجبات أولاً قبل التصفح.");
             return;
         }
 
-        ListView<String> listView = new ListView<>(allMeals);
+        ObservableList<String> displayList = FXCollections.observableArrayList();
+        for (Meal m : mealsData) {
+            String catName = m.getCategoryName() != null ? m.getCategoryName() : "بدون تصنيف";
+            displayList.add(m.getName() + "  🏷️ (" + catName + ")");
+        }
+
+        ListView<String> listView = new ListView<>(displayList);
         listView.setPrefHeight(250);
 
         Button deleteButton = new Button("❌ حذف الوجبة المحددة");
@@ -79,14 +118,16 @@ public class HelloController {
         deleteButton.setMaxWidth(Double.MAX_VALUE);
 
         deleteButton.setOnAction(event -> {
-            String selectedMeal = listView.getSelectionModel().getSelectedItem();
+            int selectedIndex = listView.getSelectionModel().getSelectedIndex();
 
-            if (selectedMeal != null) {
-                boolean success = DatabaseManager.deleteMeal(selectedMeal);
+            if (selectedIndex >= 0) {
+                Meal selectedMealObj = mealsData.get(selectedIndex);
+                boolean success = DatabaseManager.deleteMeal(selectedMealObj.getName());
 
                 if (success) {
-                    allMeals.remove(selectedMeal);
-                    mealDisplayLabel.setText("تم حذف '" + selectedMeal + "' بنجاح!");
+                    displayList.remove(selectedIndex);
+                    mealsData.remove(selectedIndex);
+                    mealDisplayLabel.setText("تم حذف '" + selectedMealObj.getName() + "' بنجاح!");
                 } else {
                     mealDisplayLabel.setText("❌ فشل حذف الوجبة من قاعدة البيانات.");
                 }
@@ -105,7 +146,7 @@ public class HelloController {
 
         Stage stage = new Stage();
         stage.setTitle("إدارة الوجبات 🛠️");
-        stage.setScene(new Scene(root, 250, 300));
+        stage.setScene(new Scene(root, 300, 300));
 
         stage.show();
     }
