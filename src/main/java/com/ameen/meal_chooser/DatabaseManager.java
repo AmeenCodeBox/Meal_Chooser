@@ -3,7 +3,8 @@ package com.ameen.meal_chooser;
 import java.sql.*;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:sqlite:C:/Users/Ameen#/Desktop/My Own Projects/Meal_Chooser/meals_database.db";
+
+    private static final String URL = "jdbc:sqlite:meals_db.db";
 
     public static Connection connect() {
         Connection conn = null;
