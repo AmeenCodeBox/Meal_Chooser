@@ -54,6 +54,13 @@
                 <Font name="System Bold" size="13.0"/>
             </font>
         </Button>
+
+        <Button text="📂 تصفح الوجبات" onAction="#onBrowseMealsClick"
+                style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-cursor: hand; -fx-padding: 8px 12px;">
+            <font>
+                <Font name="System Bold" size="13.0"/>
+            </font>
+        </Button>
     </HBox>
 
 </VBox>
