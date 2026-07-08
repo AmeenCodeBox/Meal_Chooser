@@ -45,7 +45,7 @@
         <HBox spacing="10" alignment="CENTER">
             <Button text="➕ إضافة" onAction="#onAddMealClick" prefHeight="38.0" prefWidth="90.0"
                     style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
-            <TextField fx:id="newMealInput" promptText="اكتب اسم الطبخة هنا..." prefHeight="38.0" HBox.hgrow="ALWAYS"
+            <TextField fx:id="newMealInput" onAction="#onAddMealClick" promptText="اكتب اسم الطبخة هنا..." prefHeight="38.0" HBox.hgrow="ALWAYS"
                        style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #cbd5e1; -fx-background-color: white; -fx-padding: 0 10 0 10; -fx-alignment: center_right;"/>
         </HBox>
     </VBox>
