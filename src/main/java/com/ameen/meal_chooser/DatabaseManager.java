@@ -55,20 +55,32 @@ public class DatabaseManager {
                 stmt.execute(sqlMeals);
                 System.out.println("Database tables initialized successfully");
 
-                insertDefaultCategories(stmt);
+                insertDefaultCategories(connection);
             }
         } catch (SQLException e) {
             System.out.println("an error occurred while creating the database: " + e.getMessage());
         }
     }
 
-    private static void insertDefaultCategories(Statement stmt) {
-        String[] defaults = {"أكل صيني", "أكل إيطالي", "سباغيتي", "وجبات سريعة", "أكل شرقي"};
-        for (String cat : defaults) {
-            try {
-                stmt.execute("INSERT OR IGNORE INTO categories (name) VALUES ('" + cat + "');");
-            } catch (SQLException e) {
+    private static void insertDefaultCategories(Connection connection) {
+        String checkSql = "SELECT COUNT(*) FROM categories";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(checkSql)) {
+
+            if (rs.next() && rs.getInt(1) == 0) {
+                System.out.println("جدول التصنيفات فارغ تماماً، يتم إدخال القيم الافتراضية لأول مرة...");
+
+                String[] defaults = {"أكل صيني", "أكل إيطالي", "سباغيتي", "وجبات سريعة", "أكل شرقي"};
+                for (String cat : defaults) {
+                    stmt.execute("INSERT OR IGNORE INTO categories (name) VALUES ('" + cat + "');");
+                }
+            } else {
+                System.out.println("تم تخطي إدخال التصنيفات الافتراضية لأن المستخدم يمتلك بياناته الخاصة.");
             }
+
+        } catch (SQLException e) {
+            System.out.println("حدث خطأ أثناء فحص أو إدخال التصنيفات الافتراضية: " + e.getMessage());
         }
     }
 
@@ -194,5 +206,63 @@ public class DatabaseManager {
             System.out.println("خطأ في جلب قائمة الوجبات: " + e.getMessage());
         }
         return mealsList;
+    }
+
+    public static boolean addCategory(String categoryName) {
+        String sql = "INSERT INTO categories (name) VALUES (?)";
+
+        try (Connection connection = connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            if (connection == null) return false;
+
+            preparedStatement.setString(1, categoryName);
+            preparedStatement.executeUpdate();
+            System.out.println("Category added successfully: " + categoryName);
+            return true;
+        } catch (SQLException e) {
+            if (e.getMessage().contains("UNIQUE") || e.getErrorCode() == 19) {
+                System.out.println("التصنيف موجود بالفعل: " + categoryName);
+            } else {
+                System.out.println("حدث خطأ أثناء إضافة التصنيف: " + e.getMessage());
+            }
+            return false;
+        }
+    }
+
+    public static boolean deleteCategory(int categoryId) {
+        String sql = "DELETE FROM categories WHERE id = ?";
+
+        try (Connection connection = connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            if (connection == null) return false;
+
+            preparedStatement.setInt(1, categoryId);
+            int affectedRows = preparedStatement.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            System.out.println("حدث خطأ أثناء حذف التصنيف: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public static boolean updateMealCategory(String mealName, int newCategoryId) {
+        String sql = "UPDATE meals SET category_id = ? WHERE TRIM(name) = TRIM(?)";
+
+        try (Connection connection = connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+
+            if (connection == null) return false;
+
+            preparedStatement.setInt(1, newCategoryId);
+            preparedStatement.setString(2, mealName);
+
+            int affectedRows = preparedStatement.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            System.out.println("حدث خطأ أثناء تحديث تصنيف الوجبة: " + e.getMessage());
+            return false;
+        }
     }
 }

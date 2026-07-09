@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<?import java.net.URL?>
 <VBox alignment="CENTER" spacing="20.0" prefWidth="480.0" prefHeight="550.0"
       style="-fx-background-color: #f8fafc; -fx-padding: 30;"
-      xmlns:fx="http://themeasurement.com/fxml" fx:controller="com.ameen.meal_chooser.HelloController">
+      xmlns:fx="http://javafx.com/fxml"
+      xmlns="http://javafx.com/javafx"
+      fx:controller="com.ameen.meal_chooser.HelloController">
+
+    <stylesheets>
+        <URL value="@style.css"/>
+    </stylesheets>
 
     <VBox alignment="CENTER" spacing="5">
         <Label text="غدانا اليوم 🎲" style="-fx-text-fill: #2e3d52; -fx-font-weight: bold;">
@@ -45,12 +46,15 @@
         </Label>
         <HBox spacing="10" alignment="CENTER">
             <Button text="➕ إضافة" onAction="#onAddMealClick" prefHeight="38.0" prefWidth="90.0"
-                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    style="-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"
+                    onMouseEntered="#onMouseEnteredEffect" onMouseExited="#onMouseExitedEffect"/>
 
             <ComboBox fx:id="categoryAddCombo" prefHeight="38.0" prefWidth="130.0"
-                      style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #cbd5e1; -fx-background-color: white; -fx-alignment: center_right;"/>
+                      style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #cbd5e1; -fx-background-color: white; -fx-alignment: center_right; -fx-cursor: hand;"
+                      onMouseEntered="#onMouseEnteredEffect" onMouseExited="#onMouseExitedEffect"/>
 
-            <TextField fx:id="newMealInput" onAction="#onAddMealClick" promptText="اكتب اسم الطبخة هنا..." prefHeight="38.0" HBox.hgrow="ALWAYS"
+            <TextField fx:id="newMealInput" onAction="#onAddMealClick" promptText="اكتب اسم الطبخة هنا..."
+                       prefHeight="38.0" HBox.hgrow="ALWAYS"
                        style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #cbd5e1; -fx-background-color: white; -fx-padding: 0 10 0 10; -fx-alignment: center_right;"/>
         </HBox>
     </VBox>
@@ -58,13 +62,16 @@
     <VBox spacing="12" alignment="CENTER" maxWidth="Infinity">
 
         <VBox spacing="6" alignment="CENTER_RIGHT" maxWidth="Infinity">
-            <Label text="اختر تصنيفاً للاقتراح منه:" style="-fx-text-fill: #64748b; -fx-font-size: 13px; -fx-font-weight: bold;"/>
+            <Label text="اختر تصنيفاً للاقتراح منه:"
+                   style="-fx-text-fill: #64748b; -fx-font-size: 13px; -fx-font-weight: bold;"/>
             <ComboBox fx:id="categoryFilterCombo" prefHeight="38.0" maxWidth="Infinity"
-                      style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #cbd5e1; -fx-background-color: white; -fx-alignment: center_right;"/>
+                      style="-fx-background-radius: 8; -fx-border-radius: 8; -fx-border-color: #cbd5e1; -fx-background-color: white; -fx-alignment: center_right; -fx-cursor: hand;"
+                      onMouseEntered="#onMouseEnteredEffect" onMouseExited="#onMouseExitedEffect"/>
         </VBox>
 
         <Button text="🎲 اقترح لي وجبة" onAction="#onSuggestMealClick" prefHeight="45.0" maxWidth="Infinity"
-                style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand; -fx-effect: dropshadow(three-pass-box, rgba(230,126,34,0.2), 8, 0, 0, 4);">
+                style="-fx-background-color: #e67e22; -fx-text-fill: white; -fx-background-radius: 10; -fx-font-weight: bold; -fx-cursor: hand;"
+                onMouseEntered="#onMouseEnteredEffect" onMouseExited="#onMouseExitedEffect">
             <font>
                 <Font name="Segoe UI" size="16.0"/>
             </font>
@@ -73,11 +80,13 @@
         <HBox spacing="12" alignment="CENTER" maxWidth="Infinity">
             <Button text="🗑️ حذف وجبة" onAction="#onDeleteMealClick" prefHeight="38.0" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity"
-                    style="-fx-background-color: #f1f5f9; -fx-text-fill: #ef4444; -fx-border-color: #fca5a5; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    style="-fx-background-color: #f1f5f9; -fx-text-fill: #ef4444; -fx-border-color: #fca5a5; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"
+                    onMouseEntered="#onMouseEnteredEffect" onMouseExited="#onMouseExitedEffect"/>
 
             <Button text="📂 تصفح وإدارة الوجبات" onAction="#onBrowseMealsClick" prefHeight="38.0" HBox.hgrow="ALWAYS"
                     maxWidth="Infinity"
-                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"/>
+                    style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-background-radius: 8; -fx-font-weight: bold; -fx-cursor: hand;"
+                    onMouseEntered="#onMouseEnteredEffect" onMouseExited="#onMouseExitedEffect"/>
         </HBox>
 
     </VBox>
